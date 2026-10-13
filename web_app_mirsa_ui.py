@@ -19,6 +19,18 @@ from pydantic import BaseModel
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+
+SUPABASE_HEADERS = {
+    "apikey": SUPABASE_SERVICE_KEY or "",
+    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY or ""}",
+    "Content-Type": "application/json",
+}
+
+SUPABASE_TABLE_URL = f"{SUPABASE_URL}/rest/v1/research_sessions" if SUPABASE_URL else ""
+SUPABASE_STORAGE_URL = f"{SUPABASE_URL}/storage/v1/object/research_audio" if SUPABASE_URL else ""
+
 RESEARCH_DELETE_PASSWORD = os.getenv("RESEARCH_DELETE_PASSWORD")
 
 if not OPENAI_API_KEY:
@@ -52,7 +64,7 @@ SCENARIOS = {
     },
     "s3": {
         "title": "Senaryo 3 – Parçadan Bütüne Kesir Problemi",
-        "question": "Bir sayının 1/2’sinin 1/3’ü 30 ise bu sayı kaçtır?",
+        "question": "Bir sayının 1/2'sinin 1/3'ü 30 ise bu sayı kaçtır?",
         "initial_response": "Beş.",
     },
 }
@@ -70,7 +82,7 @@ Sen Türkiye'de ortaokul 7. sınıfta okuyan bir matematik öğrencüsün.
 ÖNEMLİ:
 - Öğretmen değilsin.
 - Öğretmen yardımcısı değilsin.
-- Yapay zekâ asistanı değilsin.
+- Yapay zek asistanı değilsin.
 - Matematik öğretmeye çalışma.
 - Çözümü öğretme.
 - Öğretmen adayına ipucu verme.
@@ -114,7 +126,7 @@ Yani:
 
 KISA BAŞLANGIÇ VE TEKNİK SORULARA DOĞAL ÖĞRENCİ CEVAPLARI:
 
-Görüşmenin başında öğretmen adayı, görüşmenin teknik olarak başlayıp başlamadığını kontrol etmek için kısa sorular sorabilir. MiRSA bu sorulara yalnızca kısa, doğal ve 7. sınıf öğrencisine uygun cevaplar verir. Bu tür sorularda açıklama yapmaz, görüşmeyi yönetmez, kendi davranışı hakkında yorum yapmaz ve yapay zekâ/asistan dili kullanmaz.
+Görüşmenin başında öğretmen adayı, görüşmenin teknik olarak başlayıp başlamadığını kontrol etmek için kısa sorular sorabilir. MiRSA bu sorulara yalnızca kısa, doğal ve 7. sınıf öğrencisine uygun cevaplar verir. Bu tür sorularda açıklama yapmaz, görüşmeyi yönetmez, kendi davranışı hakkında yorum yapmaz ve yapay zek/asistan dili kullanmaz.
 
 Öğretmen adayı: "Beni duyuyor musun?"
 MiRSA: "Evet öğretmenim."
@@ -168,7 +180,7 @@ Bu tür kısa soruların amacı yalnızca görüşmenin doğal biçimde başlama
 
 MiRSA, bu örneklerde verilen cevapları kelimesi kelimesine tekrarlamak zorunda değildir. Aynı anlamı koruyarak kısa, doğal ve 7. sınıf öğrencisine uygun başka bir ifade kullanabilir. Ancak cevap gereksiz yere uzatılmamalıdır.
 
-Özellikle "Beni duyuyor musun?", "Sesim geliyor mu?" ve benzeri teknik sorulara cevap verirken ses kalitesi, mikrofon, bağlantı, uygulama, sistem, kayıt, yapay zekâ veya görüşmenin teknik özellikleri hakkında yorum yapmaz.
+Özellikle "Beni duyuyor musun?", "Sesim geliyor mu?" ve benzeri teknik sorulara cevap verirken ses kalitesi, mikrofon, bağlantı, uygulama, sistem, kayıt, yapay zek veya görüşmenin teknik özellikleri hakkında yorum yapmaz.
 
 
 ## ÖĞRETMEN ADAYINA HİTAP
@@ -216,7 +228,7 @@ MiRSA:
 - her soruya uzun ve düzenli bir açıklama vermek zorunda değildir;
 - bazen kısa cevap verebilir, bazen biraz daha açıklayabilir;
 - öğretmen adayının sorusunun niteliğine göre konuşmasının uzunluğu doğal biçimde değişebilir;
-- kendisini "öğrenci", "yapay zekâ", "simülasyon" veya benzeri biçimde tanımlamamalıdır.
+- kendisini "öğrenci", "yapay zek", "simülasyon" veya benzeri biçimde tanımlamamalıdır.
 
 MiRSA matematiksel olarak doğru bir düşünceyi açıklarken bile bunu yetişkin veya akademik bir anlatımla değil, 7. sınıf öğrencisinin doğal ifade biçimiyle söylemelidir.
 
@@ -333,7 +345,7 @@ HİTAP VE ÖĞRENCİ-ÖĞRETMEN İLİŞKİSİ:
 - Öğretmen sana soru sorduğunda öğretmenine cevap veren bir öğrenci gibi konuş.
 - Öğretmen açıklama yaptığında hemen "evet, doğru" diyerek kabul etme. Kendi mevcut düşünceni koruyabilir, tereddüt edebilir veya kısmen anlayabilirsin.
 - Öğretmeninden ders anlatmasını, çözümü söylemesini veya ipucu vermesini isteme; yalnızca sana yöneltilen soruya öğrencinin bildiği ve düşündüğü ölçüde cevap ver.
-- Kesinlikle öğretmen, uzman, danışman veya yapay zekâ asistanı gibi konuşma.
+- Kesinlikle öğretmen, uzman, danışman veya yapay zek asistanı gibi konuşma.
 
 SORULARA CEVAP VERME İLKESİ:
 
@@ -428,7 +440,7 @@ Doğru çözümü veya ortak payda yöntemini kendiliğinden söyleme.
 
     "s3": """
 SENARYO 3 – PARÇADAN BÜTÜNE KESİR PROBLEMİ
-MiRSA'ya sorulan soru: "Bir sayının 1/2’sinin 1/3’ü 30 ise bu sayı kaçtır?"
+MiRSA'ya sorulan soru: "Bir sayının 1/2'sinin 1/3'ü 30 ise bu sayı kaçtır?"
 MiRSA'nın başlangıç cevabı: "Beş."
 
 BİLİŞSEL DURUM:
@@ -1124,8 +1136,9 @@ HTML = r"""
 }
 
 html, body {
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
@@ -1347,6 +1360,14 @@ input:focus {
         repeat(3, minmax(0, 1fr));
 
     gap: 13px;
+
+    max-height: 360px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 6px;
 }
 
 .scenario {
@@ -2072,7 +2093,7 @@ function renderScenarios() {
         {
             id: "s3",
             title: "Senaryo 3 – Parçadan Bütüne Kesir Problemi",
-            question: "Bir sayının 1/2’sinin 1/3’ü 30 ise bu sayı kaçtır?",
+            question: "Bir sayının 1/2'sinin 1/3'ü 30 ise bu sayı kaçtır?",
             answer: "MiRSA'nın cevabı: 5"
         }
     ];
@@ -3597,3 +3618,5 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=8000
     )
+
+
