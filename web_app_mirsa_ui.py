@@ -1059,6 +1059,25 @@ async def download_transcript(session_id: str):
 # DOSYAYA KAYDET
 # =========================================================
 
+def import_research_records(records, password):
+    if not RESEARCH_DELETE_PASSWORD or password != RESEARCH_DELETE_PASSWORD:
+        raise HTTPException(status_code=403, detail="Yetkisiz aktarım")
+    if not SUPABASE_TABLE_URL or not SUPABASE_SERVICE_KEY:
+        raise HTTPException(status_code=500, detail="Supabase ayarları bulunamadı")
+    imported = 0
+    for session in records:
+        payload = {
+            "session_id": session.get("session_id"),
+            "participant_code": session.get("participant_code"),
+            "scenario_id": session.get("scenario_id"),
+            "session_data": session,
+        }
+        r = requests.post(SUPABASE_TABLE_URL, headers={**SUPABASE_HEADERS, "Prefer": "resolution=merge-duplicates,return=minimal"}, json=payload, timeout=30)
+        if r.status_code not in (200, 201, 204):
+            raise HTTPException(status_code=502, detail=f"Supabase aktarım hatası: {r.status_code} {r.text[:300]}")
+        imported += 1
+    return {"imported": imported}
+
 def save_session(session):
 
     path = DATA_DIR / f"{session['session_id']}.json"
@@ -1115,6 +1134,13 @@ load_all_sessions()
 # =========================================================
 # HTML
 # =========================================================
+
+@app.post("/research/import")
+async def research_import(payload: dict):
+    password = payload.get("password")
+    records = payload.get("records", [])
+    return import_research_records(records, password)
+
 
 HTML = r"""
 <!DOCTYPE html>

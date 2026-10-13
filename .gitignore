@@ -7,3 +7,4 @@ research_data/
 mirsa_research_data/
 .pytest_cache/
 .git/
+research_export.json
