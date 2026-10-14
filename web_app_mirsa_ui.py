@@ -32,6 +32,7 @@ SUPABASE_TABLE_URL = f"{SUPABASE_URL}/rest/v1/research_sessions" if SUPABASE_URL
 SUPABASE_STORAGE_URL = f"{SUPABASE_URL}/storage/v1/object/research_audio" if SUPABASE_URL else ""
 
 RESEARCH_DELETE_PASSWORD = os.getenv("RESEARCH_DELETE_PASSWORD")
+MEETING_PASSWORD = os.getenv("MEETING_PASSWORD", "AU2026")
 
 if not OPENAI_API_KEY:
     raise RuntimeError(
@@ -598,6 +599,7 @@ def build_full_prompt(scenario_id: str) -> str:
 class StartRequest(BaseModel):
     participant_code: str
     scenario_id: str
+    meeting_password: str = ""
 
 
 class FinishRequest(BaseModel):
@@ -628,6 +630,9 @@ async def index():
 
 @app.post("/start")
 async def start_session(data: StartRequest):
+
+    if data.meeting_password != MEETING_PASSWORD:
+        raise HTTPException(status_code=403, detail="Görüşme şifresi hatalı.")
 
     if data.scenario_id not in SCENARIOS:
         raise HTTPException(
@@ -2211,6 +2216,12 @@ async function startSession() {
     }
 
 
+    const meetingPassword = prompt("Görüşme şifresini girin:");
+
+    if (meetingPassword === null) {
+        return;
+    }
+
     const button =
         document.getElementById(
             "startButton"
@@ -2244,7 +2255,10 @@ async function startSession() {
                             participantCode,
 
                         scenario_id:
-                            selectedScenario
+                            selectedScenario,
+
+                        meeting_password:
+                            meetingPassword
                     })
                 }
             );
